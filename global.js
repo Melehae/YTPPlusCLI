@@ -2,7 +2,8 @@
 const fs = require("fs"),
     ffmpeg = require("ffmpeg-cli"),
     { execSync } = require('child_process'),
-    mediainfo = require('mediainfo-static');
+    mediainfo = require('mediainfo-static'),
+    path = require("path")
 module.exports = {
     /* Prompt Defaults */
     defaults: {
@@ -25,8 +26,11 @@ module.exports = {
         //Taken from https://www.npmjs.com/package/video-length
         //Not using package due to invalid params with mediainfo-static
         let vid = `"${video.replace(/\//g,(process.platform === "win32" ? "\\\\" : "/"))}"`;
-        let stdout = execSync(mediainfo.path+" "+vid+' --full --output=JSON');
+        var ccwd = process.cwd()
+        process.chdir(path.dirname(mediainfo.path));
+        let stdout = execSync(path.basename(mediainfo.path)+" "+vid+' --full --output=JSON');
         if(stdout) {
+            process.chdir(ccwd);
             let specs = JSON.parse(stdout.toString());
             let { track } = specs.media;
             if(!track){
@@ -59,8 +63,11 @@ module.exports = {
         //Taken from https://www.npmjs.com/package/video-length
         //Modified
         let vid = `"${video.replace(/\//g,(process.platform === "win32" ? "\\\\" : "/"))}"`;
-        let stdout = execSync(mediainfo.path+" "+vid+' --full --output=JSON');
+        let stdout = execSync(path.basename(mediainfo.path)+" "+vid+' --full --output=JSON');
+        var cwd = process.cwd()
+        process.chdir(path.dirname(mediainfo.path));
         if(stdout) {
+            process.chdir(ccwd);
             let specs = JSON.parse(stdout.toString());
             let { track } = specs.media;
             if(!track){
