@@ -66,6 +66,8 @@ function go(toolbox) {
 			if(!toolbox.silent)
 				bar.increment();
 		}
+		console.log("\n--------\nConcatenating video... This might take a while!\n--------")
+		toolbox.debug = true
 		global.concatenateVideo(toolbox.clips, toolbox.output, toolbox.debug);
 	} catch (ex) {
 		process.stdin.resume();
