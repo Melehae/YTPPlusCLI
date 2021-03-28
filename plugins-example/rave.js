@@ -32,7 +32,8 @@ module.exports = {
 			temp11 = cwd + "/shared/temp/temp11.mp4",
 			temp12 = cwd + "/shared/temp/temp12.mp4",
 			temp13 = cwd + "/shared/temp/temp13.mp4",
-			temp14 = cwd + "/shared/temp/temp14.mp4";
+			temp14 = cwd + "/shared/temp/temp14.mp4",
+			temp15 = cwd + "/shared/temp/temp15.mp4";
 
 		//Delete temporary files
 		if (fs.existsSync(temp))
@@ -63,6 +64,8 @@ module.exports = {
 			fs.unlinkSync(temp13);
 		if (fs.existsSync(temp14))
 			fs.unlinkSync(temp14);
+		if (fs.existsSync(temp15))
+			fs.unlinkSync(temp15);
 
 		//Copy video to a temporary file
 		if (fs.existsSync(input))
@@ -96,11 +99,15 @@ module.exports = {
 		commands.push("-i \""+temp+"\" -i \""+temp11+"\" -filter_complex \"[1:v]reverse[vid];[0:v]frei0r=filter_name=nervous,frei0r=filter_name=colorize:filter_params=0.25[vid2];[vid][vid2]concat=n=2:v=1[outv]\" -ac 2 -ar 44100 -map [outv] -y \""+temp12+"\"");
 		commands.push("-i \""+temp+"\" -i \""+temp12+"\" -filter_complex \"[0:v]frei0r=filter_name=nervous,frei0r=filter_name=colorize:filter_params=0.1[vid2];[1:v][vid2]concat=n=2:v=1[outv]\" -ac 2 -ar 44100 -map [outv] -y \""+temp13+"\"");
 		commands.push("-i \""+temp+"\" -i \""+temp13+"\" -filter_complex \"[1:v]reverse[vid];[0:v]frei0r=filter_name=nervous,frei0r=filter_name=colorize:filter_params=0.25[vid2];[vid][vid2]concat=n=2:v=1[outv]\" -ac 2 -ar 44100 -map [outv] -y \""+temp14+"\"");
-		commands.push("-i \""+temp+"\" -i \""+temp14+"\" -i \""+cwd+"/"+pluginConfig.MusicDirectory+randomSound+"\" -filter_complex \"[0:v]frei0r=filter_name=nervous,frei0r=filter_name=colorize:filter_params=0.1[vid2];[1:v][vid2]concat=n=2:v=1[outv];[2:a]volume=1[aud]\" -ac 2 -ar 44100 -map [aud] -map [outv] -t 3.5 -y \""+video+"\"");
+		commands.push("-i \""+temp+"\" -i \""+temp14+"\" -i \""+cwd+"/"+pluginConfig.MusicDirectory+randomSound+"\" -filter_complex \"[0:v]frei0r=filter_name=nervous,frei0r=filter_name=colorize:filter_params=0.1[vid2];[1:v][vid2]concat=n=2:v=1[outv];[2:a]volume=1[aud]\" -ac 2 -ar 44100 -map [aud] -map [outv] -t 3.5 -y \""+temp15+"\"");
 
 		for (var i = 0; i < commands.length; i++) {
 			global.ffmpeg.runSync(commands[i] + (debug == false ? " -hide_banner -loglevel quiet" : ""));
 		}
+
+		global.ffmpeg.runSync(" -i \"" + temp15 + "\""
+			+ " -pix_fmt yuv420p -vf scale="+toolbox.width+"x"+toolbox.height+",setsar=1:1,fps=fps="+toolbox.fps + " -ar 44100 -ac 2 -map_metadata -1 -map_chapters -1 -y \"" + video + "\""
+			+ (debug == false ? " -hide_banner -loglevel quiet" : ""));
 		
 		fs.unlinkSync(temp);
 		fs.unlinkSync(temp2);
@@ -116,6 +123,7 @@ module.exports = {
 		fs.unlinkSync(temp12);
 		fs.unlinkSync(temp13);
 		fs.unlinkSync(temp14);
+		fs.unlinkSync(temp15);
 		return true
   	}
 };

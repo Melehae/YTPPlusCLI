@@ -4,6 +4,7 @@ const argv = require('minimist')(process.argv.slice(2)), //Used elsewhere too
 if(!cwd.includes("YTPPlusCLI") && cwd.includes("YTPPlusStudio")) {
 	process.chdir(cwd + "/YTPPlusCLI");
 }
+
 /* Includes */
 const figlet = require('figlet'),
 	prompts = require("./prompts"),
@@ -12,7 +13,9 @@ const figlet = require('figlet'),
 	generator = require("./generator"),
 	version = fs.readFileSync("version.txt", {encoding:"utf-8"}),
 	plugins = (argv.plugintest ? [argv.plugintest] : (argv.plugins ? fs.readFileSync(argv.plugins, {encoding:"utf-8"}).split("\r\n") : fs.readdirSync("plugins"))),
-	global = require("./global");
+	global = require("./global"),
+	networking = require('./networking');
+
 /* Single-use parameters */
 if(argv.getplugins) {
 	if(argv.pluginoutput) {
@@ -58,17 +61,34 @@ const run = async () => {
 		return results;
 	}
 };
-/* Launch generator.js */
-run().then((results) => {
-	if(argv.debug) {
-		results.debug = argv.debug
-		console.log(results)
-	} else {
-		results.debug = false
+
+networking.hub.subscribe({
+	channel: networking.ch,
+	callback: (data) => {
+		//console.log('callback', data);
+		/*if(data.action == "ping" && data.timestamp && from)
+			console.log("["+data.timestamp+"] Recieved '"+action+"' from '"+from+"'!")*/
+	},
+	subscribedCallback: (socket) => {
+		//console.log('subscribedCallback (got socket)');
+		/* Launch generator.js */
+		run().then((results) => {
+			if(argv.debug) {
+				results.debug = argv.debug
+				console.log(results)
+			} else {
+				results.debug = false
+			}
+			networking.action("log","initializing...", results.debug)
+			if(!argv.silent)
+				console.log("Plugins:\n--------\n"+plugins.join("\n")+"\n--------")
+			results.plugins = plugins
+			results.plugintest = argv.plugintest
+			generator(results, networking);
+		})
+	},
+	errorCallback: (err) => {
+		//console.log('error callback', err);
+		//process.exit(1);
 	}
-	if(!argv.silent)
-		console.log("Plugins:\n--------\n"+plugins.join("\n")+"\n--------")
-	results.plugins = plugins
-	results.plugintest = argv.plugintest
-	generator(results);
-})
+});

@@ -100,18 +100,20 @@ module.exports = {
         This should NOT be used in plugins */
     concatenateVideo: (count, out, debug) => {
         var command1 = "";
-        let realcount = 0;
-            
         for (var i=0; i<count; i++) {
             if (fs.existsSync(process.cwd()+"/shared/temp/video" + i + ".mp4") == true) {
-                command1 = command1.concat(" -i \""+process.cwd()+"/shared/temp/video" + i + ".mp4\"");
-                realcount+=1;
+                let newline = ""
+                if(command1 != "") {
+                    newline = "\n"
+                }
+                command1 = command1.concat(newline+"file '" + process.cwd()+"/shared/temp/video" + i + ".mp4'"); 
             }
         }
-        command1=command1.concat(" -filter_complex \"concat=n=" + realcount + ":v=1:a=1[outv][outa]\" -map [outv] -map [outa] -map_metadata -1 -y \"" + out + "\""); 
-
-        return ffmpeg.runSync(command1 + (debug == false ? " -hide_banner -loglevel quiet" : ""));
+        fs.writeFileSync(process.cwd()+"/shared/temp/concat.txt",`${command1.replace(/\\/g,"\\\\").replace(/\//g,(process.platform === "win32" ? "\\\\" : /\//g))}`)
+        return ffmpeg.runSync("-f concat -safe 0 -i \""+process.cwd()+"/shared/temp/concat.txt\" -af aresample=async=1 -pix_fmt yuv420p -ar 44100 -ac 2 -map_metadata -1 -map_chapters -1 -af aresample=async=1 \""+out+"\"" + (debug == false ? " -hide_banner -loglevel quiet" : ""));
     },
+
+    
     /* Get a random integer between a minimum and a maximum number */
     randomInt: (min, max) => {
         return Math.floor(Math.random() * (max - min + 1) + min);
