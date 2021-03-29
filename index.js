@@ -1,7 +1,7 @@
 /* Change directory to YTPPlusCLI if we're not in it already */
 const argv = require('minimist')(process.argv.slice(2)), //Used elsewhere too
 	cwd = (argv.cwd ? argv.cwd : process.cwd());
-if(!cwd.includes("YTPPlusCLI") && (cwd.includes("YTPPlusStudio") || cwd.includes("Desktop"))) {
+if(!cwd.includes("YTPPlusCLI") && (cwd.includes("YTPPlusStudio") || cwd.includes("ytpplusstudio"))) {
 	process.chdir(cwd + "/YTPPlusCLI");
 }
 
