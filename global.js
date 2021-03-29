@@ -109,7 +109,7 @@ module.exports = {
                 command1 = command1.concat(newline+"file '" + process.cwd()+"/shared/temp/video" + i + ".mp4'"); 
             }
         }
-        fs.writeFileSync(process.cwd()+"/shared/temp/concat.txt",`${command1.replace(/\\/g,"\\\\").replace(/\//g,(process.platform === "win32" ? "\\\\" : /\//g))}`)
+        fs.writeFileSync(process.cwd()+"/shared/temp/concat.txt", command1)
         return ffmpeg.runSync("-f concat -safe 0 -i \""+process.cwd()+"/shared/temp/concat.txt\" -af aresample=async=1 -pix_fmt yuv420p -ar 44100 -ac 2 -map_metadata -1 -map_chapters -1 -af aresample=async=1 \""+out+"\"" + (debug == false ? " -hide_banner -loglevel quiet" : ""));
     },
 
