@@ -90,7 +90,7 @@ function go(toolbox, networking) {
 	if(!toolbox.silent)
 		bar.update(toolbox.clips);
 	cleanUp(toolbox.clips);
-	fs.rmdirSync(process.cwd()+"/shared/temp/");
+	fs.rmdirSync(process.cwd()+"/shared/temp/", { recursive: true }); //may be broken!!
 	networking.action("complete","completed!", toolbox.debug)
 	console.log("Finished!")
 	process.exit(0); //All done here
