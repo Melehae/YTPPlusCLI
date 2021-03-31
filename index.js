@@ -1,16 +1,17 @@
+/* Includes */
+const fs = require('fs')
+
+if(!process.cwd().includes("YTPPlusCLI")) {
+	if(fs.existsSync(process.cwd() + "/YTPPlusCLI"))
+		process.chdir(process.cwd() + "/YTPPlusCLI");
+}
+
 /* Change directory to YTPPlusCLI if we're not in it already */
 const argv = require('minimist')(process.argv.slice(2)), //Used elsewhere too
 	cwd = (argv.cwd ? argv.cwd : process.cwd());
 
-if(!cwd.includes("YTPPlusCLI")) {
-	if(fs.existsSync(cwd + "/YTPPlusCLI"))
-		process.chdir(cwd + "/YTPPlusCLI");
-}
-
-/* Includes */
 const figlet = require('figlet'),
 	prompts = require("./prompts"),
-	fs = require('fs'),
 	package = JSON.parse(fs.readFileSync("./package.json", {encoding:"utf-8"})),
 	generator = require("./generator"),
 	version = fs.readFileSync("version.txt", {encoding:"utf-8"}),
