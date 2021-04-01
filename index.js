@@ -65,6 +65,24 @@ const run = async () => {
 	}
 };
 
+function ytp() {
+	ytp = null //in case it does get call again - TODO: does this even work?
+	run().then((results) => {
+		if(argv.debug) {
+			results.debug = argv.debug
+			console.log(results)
+		} else {
+			results.debug = false
+		}
+		networking.action("log","initializing...", results.debug)
+		if(!argv.silent)
+			console.log("Plugins:\n--------\n"+plugins.join("\n")+"\n--------")
+		results.plugins = plugins
+		results.plugintest = argv.plugintest
+		generator(results, networking);
+	})
+}
+
 networking.hub.subscribe({
 	channel: networking.ch,
 	callback: (data) => {
@@ -74,24 +92,11 @@ networking.hub.subscribe({
 	},
 	subscribedCallback: (socket) => {
 		//console.log('subscribedCallback (got socket)');
-		/* Launch generator.js */
-		run().then((results) => {
-			if(argv.debug) {
-				results.debug = argv.debug
-				console.log(results)
-			} else {
-				results.debug = false
-			}
-			networking.action("log","initializing...", results.debug)
-			if(!argv.silent)
-				console.log("Plugins:\n--------\n"+plugins.join("\n")+"\n--------")
-			results.plugins = plugins
-			results.plugintest = argv.plugintest
-			generator(results, networking);
-		})
+		return ytp()
 	},
 	errorCallback: (err) => {
 		//console.log('error callback', err);
 		//process.exit(1);
+		return ytp()
 	}
 });
