@@ -26,7 +26,7 @@ module.exports = {
         //Taken from https://www.npmjs.com/package/video-length
         //Not using package due to invalid params with mediainfo-static
         let vid = `"${video.replace(/\//g,(process.platform === "win32" ? "\\\\" : "/"))}"`;
-        var ccwd = process.cwd()
+        var ccwd = __dirname
         process.chdir(path.dirname(mediainfo.path));
         let stdout = execSync(path.basename(mediainfo.path)+" "+vid+' --full --output=JSON');
         if(stdout) {
@@ -64,7 +64,7 @@ module.exports = {
         //Modified
         let vid = `"${video.replace(/\//g,(process.platform === "win32" ? "\\\\" : "/"))}"`;
         let stdout = execSync(path.basename(mediainfo.path)+" "+vid+' --full --output=JSON');
-        var cwd = process.cwd()
+        var cwd = __dirname
         process.chdir(path.dirname(mediainfo.path));
         if(stdout) {
             process.chdir(ccwd);
@@ -101,16 +101,16 @@ module.exports = {
     concatenateVideo: (count, out, debug) => {
         var command1 = "";
         for (var i=0; i<count; i++) {
-            if (fs.existsSync(process.cwd()+"/shared/temp/video" + i + ".mp4") == true) {
+            if (fs.existsSync(__dirname+"/shared/temp/video" + i + ".mp4") == true) {
                 let newline = ""
                 if(command1 != "") {
                     newline = "\n"
                 }
-                command1 = command1.concat(newline+"file '" + process.cwd()+"/shared/temp/video" + i + ".mp4'"); 
+                command1 = command1.concat(newline+"file '" + __dirname+"/shared/temp/video" + i + ".mp4'"); 
             }
         }
-        fs.writeFileSync(process.cwd()+"/shared/temp/concat.txt", command1)
-        return ffmpeg.runSync("-f concat -safe 0 -i \""+process.cwd()+"/shared/temp/concat.txt\" -af aresample=async=1 -pix_fmt yuv420p -ar 44100 -ac 2 -map_metadata -1 -map_chapters -1 -af aresample=async=1 \""+out+"\"" + (debug == false ? " -hide_banner -loglevel quiet" : ""));
+        fs.writeFileSync(__dirname+"/shared/temp/concat.txt", command1)
+        return ffmpeg.runSync("-f concat -safe 0 -i \""+__dirname+"/shared/temp/concat.txt\" -af aresample=async=1 -pix_fmt yuv420p -ar 44100 -ac 2 -map_metadata -1 -map_chapters -1 -af aresample=async=1 \""+out+"\"" + (debug == false ? " -hide_banner -loglevel quiet" : ""));
     },
 
     

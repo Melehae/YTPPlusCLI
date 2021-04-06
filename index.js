@@ -1,21 +1,21 @@
 /* Includes */
 const fs = require('fs')
 
-if(!process.cwd().includes("YTPPlusCLI")) {
-	if(fs.existsSync(process.cwd() + "/YTPPlusCLI"))
-		process.chdir(process.cwd() + "/YTPPlusCLI");
+if(!__dirname.includes("YTPPlusCLI")) {
+	if(fs.existsSync(__dirname + "/YTPPlusCLI"))
+		process.chdir(__dirname + "/YTPPlusCLI");
 }
 
 /* Change directory to YTPPlusCLI if we're not in it already */
 const argv = require('minimist')(process.argv.slice(2)), //Used elsewhere too
-	cwd = (argv.cwd ? argv.cwd : process.cwd());
+	cwd = (argv.cwd ? argv.cwd : __dirname);
 
 const figlet = require('figlet'),
 	prompts = require("./prompts"),
-	package = JSON.parse(fs.readFileSync("./package.json", {encoding:"utf-8"})),
+	package = JSON.parse(fs.readFileSync(__dirname+"/package.json", {encoding:"utf-8"})),
 	generator = require("./generator"),
-	version = fs.readFileSync("version.txt", {encoding:"utf-8"}),
-	plugins = (argv.plugintest ? [argv.plugintest] : (argv.plugins ? fs.readFileSync(argv.plugins, {encoding:"utf-8"}).split("\r\n") : fs.readdirSync("plugins"))),
+	version = fs.readFileSync(__dirname+"/version.txt", {encoding:"utf-8"}),
+	plugins = (argv.plugintest ? [argv.plugintest] : (argv.plugins ? fs.readFileSync(argv.plugins, {encoding:"utf-8"}).split("\r\n") : fs.readdirSync(__dirname+"/plugins"))),
 	global = require("./global"),
 	networking = require('./networking');
 
@@ -35,12 +35,12 @@ if(argv.getplugins) {
 if(!argv.silent)
 	console.log(figlet.textSync('ytp+ cli', { horizontalLayout: 'full' }) + "\n" + package.homepage + " v" + version + "\nThis software is licensed under the GNU General Public License Version 3.0.");
 /* Errors and warnings */
-if(!fs.existsSync(process.cwd()+"/shared")) {
-	console.log("No shared directory found!\nThe 'shared' directory has been created in "+process.cwd());
-	fs.mkdirSync(process.cwd()+"/shared")
+if(!fs.existsSync(__dirname+"/shared")) {
+	console.log("No shared directory found!\nThe 'shared' directory has been created in "+__dirname);
+	fs.mkdirSync(__dirname+"/shared")
 }
-if(!fs.existsSync(process.cwd()+"/shared/temp")) {
-	fs.mkdirSync(process.cwd()+"/shared/temp");
+if(!fs.existsSync(__dirname+"/shared/temp")) {
+	fs.mkdirSync(__dirname+"/shared/temp");
 }
 /* Prompts */
 const run = async () => {

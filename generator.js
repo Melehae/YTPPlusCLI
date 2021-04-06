@@ -33,7 +33,7 @@ function go(toolbox, networking) {
 					console.log("\nTryina use a diff source");
 				networking.action("log","using a transition on clip "+i+"/"+toolbox.clips+"...", toolbox.debug)
 				var transitions = fs.readFileSync(toolbox.transitions, {encoding:"utf-8"});
-				global.copyVideo(pickSource(transitions.split("\n")), process.cwd()+"/shared/temp/video" + i, [toolbox.width, toolbox.height], toolbox.fps, toolbox.debug);
+				global.copyVideo(pickSource(transitions.split("\n")), __dirname+"/shared/temp/video" + i, [toolbox.width, toolbox.height], toolbox.fps, toolbox.debug);
 			} else {
 				var sourceToPick = inputfiles[global.randomInt(0, inputfiles.length-1)];
 				var data = global.getVideoProbe(sourceToPick);
@@ -49,7 +49,7 @@ function go(toolbox, networking) {
 					console.log("\nEnding of clip " + i + ": " + endOfClip + ", in seconds: ");
 				}
 				networking.action("log","snipping clip "+i+"/"+toolbox.clips+" to length...", toolbox.debug)
-				global.snipVideo(sourceToPick, startOfClip, endOfClip, process.cwd()+"/shared/temp/video" + i, [toolbox.width, toolbox.height], toolbox.fps, toolbox.debug);
+				global.snipVideo(sourceToPick, startOfClip, endOfClip, __dirname+"/shared/temp/video" + i, [toolbox.width, toolbox.height], toolbox.fps, toolbox.debug);
 			}
 			//Add a random effect to the video
 			let int;
@@ -64,9 +64,9 @@ function go(toolbox, networking) {
 					var effect = toolbox.plugins[int];
 					if(toolbox.debug)
 						console.log("\nSTARTING EFFECT ON CLIP " + i + " EFFECT " + effect);
-					var clipToWorkWith = process.cwd()+"/shared/temp/video" + i + ".mp4";
+					var clipToWorkWith = __dirname+"/shared/temp/video" + i + ".mp4";
 					networking.action("log","using '"+effect+"' on clip "+i+"/"+toolbox.clips+"...", toolbox.debug)
-					plugins[effect].plugin(clipToWorkWith, toolbox, process.cwd(), toolbox.debug);
+					plugins[effect].plugin(clipToWorkWith, toolbox, __dirname, toolbox.debug);
 				}
 			}
 			if(!toolbox.silent)
@@ -90,7 +90,7 @@ function go(toolbox, networking) {
 	if(!toolbox.silent)
 		bar.update(toolbox.clips);
 	cleanUp(toolbox.clips);
-	fs.rmdirSync(process.cwd()+"/shared/temp/", { recursive: true }); //may be broken!!
+	fs.rmdirSync(__dirname+"/shared/temp/", { recursive: true }); //may be broken!!
 	networking.action("complete","completed!", toolbox.debug)
 	console.log("Finished!")
 	process.exit(0); //All done here
@@ -107,13 +107,13 @@ function randomvar(min, max) {
 
 
 function cleanUp(clips, debug) {
-	if (fs.existsSync(process.cwd()+"/shared/temp/temp.mp4"))
-		fs.unlinkSync(process.cwd()+"/shared/temp/temp.mp4");
-	if (fs.existsSync(process.cwd()+"/shared/temp/concat.txt"))
-		fs.unlinkSync(process.cwd()+"/shared/temp/concat.txt")
+	if (fs.existsSync(__dirname+"/shared/temp/temp.mp4"))
+		fs.unlinkSync(__dirname+"/shared/temp/temp.mp4");
+	if (fs.existsSync(__dirname+"/shared/temp/concat.txt"))
+		fs.unlinkSync(__dirname+"/shared/temp/concat.txt")
 	for (var i=0; i<clips; i++) {
-		if (fs.existsSync(process.cwd()+"/shared/temp/video"+i+".mp4")) {
-			fs.unlinkSync(process.cwd()+"/shared/temp/video"+i+".mp4");
+		if (fs.existsSync(__dirname+"/shared/temp/video"+i+".mp4")) {
+			fs.unlinkSync(__dirname+"/shared/temp/video"+i+".mp4");
 			if(debug)
 				console.log(i + " Exists");
 		}
