@@ -107,7 +107,7 @@ dist
 filter.txt
 enabledplugins.txt
 videos.txt
-*.mp4
+videoplayback (1).mp4
 concat.txt
 plugins.txt
 package-lock.json
